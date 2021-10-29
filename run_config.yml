@@ -1,0 +1,7 @@
+nodes:
+- input.recorded:
+    input_dir: ~/code/YOLOX/data/video/single_person.mp4
+- model.yolo
+- draw.bbox
+- output.media_writer:
+    output_dir: ~/code/YOLOX/PKD_outputs/yolov4_tiny/single_person
