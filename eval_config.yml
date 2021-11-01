@@ -1,0 +1,23 @@
+experiment_name: null
+name: yolox-x
+
+camid: 0
+# mode: image
+# path: ~/code/YOLOX/data/image/dog.jpg
+mode: video
+# path: ~/code/YOLOX/data/video/single_person.mp4
+path: ~/code/YOLOX/data/video/multiple_people.mp4
+save_result: true
+
+ckpt: weights/yolox_x.pth
+device: gpu
+exp_file: null
+
+conf: 0.25
+nms: 0.45
+tsize: 416
+
+fp16: false
+fuse: false
+legacy: false
+trt: false
