@@ -1,0 +1,4 @@
+input: ["img"]
+output: ["bboxes", "bbox_labels", "bbox_scores"]
+
+detect_ids: [0]
