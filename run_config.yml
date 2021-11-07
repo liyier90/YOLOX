@@ -1,12 +1,12 @@
 nodes:
-- input.recorded:
-    input_dir: ~/code/YOLOX/data/video/single_person.mp4
-    # input_dir: ~/code/YOLOX/data/video/multiple_people.mp4
-- model.yolo:
-    # model_type: v4tiny
-    model_type: v4
-- dabble.fps
-- draw.bbox
-- output.media_writer:
-    # output_dir: ~/code/YOLOX/PKD_outputs/yolov4_tiny
-    output_dir: ~/code/YOLOX/PKD_outputs/yolov4
+  - input.recorded:
+      input_dir: ~/code/YOLOX/data/video/single_person.mp4
+      # input_dir: ~/code/YOLOX/data/video/multiple_people.mp4
+  - model.yolo:
+      model_type: v4tiny
+      # model_type: v4
+  - dabble.fps
+  - draw.bbox
+  - output.media_writer:
+      # output_dir: ~/code/YOLOX/PKD_outputs/yolov4_tiny
+      output_dir: ~/code/YOLOX/PKD_outputs/yolov4

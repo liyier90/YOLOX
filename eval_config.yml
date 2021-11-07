@@ -1,5 +1,5 @@
 experiment_name: null
-name: yolox-x
+name: yolox-m
 
 camid: 0
 # mode: image
@@ -9,7 +9,7 @@ mode: video
 path: ~/code/YOLOX/data/video/multiple_people.mp4
 save_result: true
 
-ckpt: weights/yolox_x.pth
+ckpt: weights/yolox_m.pth
 device: gpu
 exp_file: null
 
@@ -18,6 +18,6 @@ nms: 0.45
 tsize: 416
 
 fp16: false
-fuse: false
+fuse: true
 legacy: false
 trt: false

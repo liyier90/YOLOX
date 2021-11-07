@@ -18,7 +18,7 @@ from yolox.exp import get_exp
 from yolox.exp.yolox_base import Exp
 from yolox.models.yolox import YOLOX
 from yolox.utils import (
-    # fuse_model,
+    fuse_model,
     get_model_info,
     postprocess,
     vis,
@@ -89,10 +89,12 @@ class Predictor:
         self,
         model: YOLOX,
         exp: Exp,
+        device,
         cls_names: Tuple = COCO_CLASSES,
         trt_file: Path = None,
         decoder: Callable = None,
-        device: str = "cpu",
+        # device: str = "cpu",
+        # fp16: bool = False,
         fp16: bool = False,
         legacy: bool = False,
     ):
@@ -150,11 +152,9 @@ class Predictor:
 
         img, _ = self.preprocess(img, None, self.test_size)
         img = torch.from_numpy(img).unsqueeze(0)
-        img = img.float()
-        if self.device == "gpu":
-            img = img.cuda()
-            if self.fp16:
-                img = img.half()
+        img = img.float().to(self.device)
+        if self.fp16:
+            img = img.half()
 
         with torch.no_grad():
             time_start = time.time()
@@ -171,7 +171,7 @@ class Predictor:
             outputs = [
                 output[filter_by_detect_id(output[..., 6])] for output in outputs
             ]
-            logger.info(f"Infer time: {time.time() - time_start:.4f}")
+            # logger.info(f"Infer time: {time.time() - time_start:.4f}")
 
         self.fps_counter.run()
 
@@ -296,10 +296,16 @@ def main(exp: Exp, config: SimpleNamespace):
     model = exp.get_model()
     logger.info(f"Model summary: {get_model_info(model, exp.test_size)}")
 
-    if config.device == "gpu":
-        model.cuda()
-        if config.fp16:
-            model.half()  # to FP16
+    device = (
+        torch.device("cuda")
+        if config.device == "gpu" and torch.cuda.is_available()
+        else torch.device("cpu")
+    )
+    half = config.fp16 and device.type != "cpu"
+
+    model.to(device)
+    if half:
+        model.half()
     model.eval()
 
     if not config.trt:
@@ -313,9 +319,9 @@ def main(exp: Exp, config: SimpleNamespace):
         model.load_state_dict(ckpt["model"])
         logger.info("Loaded checkpoint done.")
 
-    # if config.fuse:
-    #     logger.info("\tFusing model...")
-    #     model = fuse_model(model)
+    if config.fuse:
+        logger.info("\tFusing model...")
+        model = fuse_model(model)
 
     # if config.trt:
     #     assert not config.fuse, "TensorRT model is not support model fusing!"
@@ -335,11 +341,13 @@ def main(exp: Exp, config: SimpleNamespace):
     predictor = Predictor(
         model,
         exp,
+        device,
         COCO_CLASSES,
         trt_file,
         decoder,
-        config.device,
-        config.fp16,
+        # config.device,
+        # config.fp16,
+        half,
         config.legacy,
     )
     current_time = time.localtime()
